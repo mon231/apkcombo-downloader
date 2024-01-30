@@ -17,7 +17,9 @@ inputs:
     required: true
 
 runs:
-  using: 'composite'
+  using: 'docker'
+  image: 'selenium/standalone-edge:dev'
+
   steps:
     - uses: actions/setup-python@v4
       with:
