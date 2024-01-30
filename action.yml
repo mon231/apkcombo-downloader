@@ -1,0 +1,32 @@
+name: 'apkcombo-downloader'
+
+author: "Ariel Tubul"
+description: 'Download an apk from apkcombo'
+
+branding:
+  color: 'red'
+  icon: 'smartphone'
+
+inputs:
+  package:
+    description: 'Package name to download'
+    required: true
+
+  output-apk:
+    description: 'Path to output apk file'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Prepare apkmod
+      run: pip install -r requirements.txt
+      shell: pwsh
+
+    - name: Download apk
+      run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }}
+      shell: pwsh
