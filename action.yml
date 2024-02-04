@@ -16,6 +16,11 @@ inputs:
     description: 'Path to output apk file'
     required: true
 
+  artifact-name:
+    description: 'Name of artifact to upload'
+    required: false
+    default: ''
+
 runs:
   using: 'docker'
   image: 'selenium/standalone-edge:dev'
@@ -32,3 +37,11 @@ runs:
     - name: Download apk
       run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }}
       shell: pwsh
+
+    - name: Upload downloaded apk
+      if: inputs.artifact-name != ''
+      uses: actions/upload-artifact@v3.1.2
+
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.output-apk }}
