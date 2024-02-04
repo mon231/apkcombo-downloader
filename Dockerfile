@@ -7,7 +7,7 @@ RUN apt install -y python3 python3-pip
 COPY . /app
 WORKDIR /app
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["python", "/app/downloader.py"]
+ENTRYPOINT ["python3", "/app/downloader.py"]
