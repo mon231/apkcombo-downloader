@@ -16,4 +16,4 @@ ENV DISPLAY=:99
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["python", "./downloader.py"]
+ENTRYPOINT ["python", "./downloader.py"]
