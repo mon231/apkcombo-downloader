@@ -47,8 +47,8 @@ inputs:
     default: ''
 
 runs:
-  using: 'docker'
-  image: 'selenium/standalone-edge:dev'
+  runs-on: 'ubuntu-latest'
+  container: 'selenium/standalone-edge:dev'
 
   steps:
     - uses: actions/setup-python@v4
