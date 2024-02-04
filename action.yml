@@ -60,7 +60,7 @@ runs:
       shell: pwsh
 
     - name: Download apk
-      run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }} --language ${{ input.apk-language }} --device ${{ input.apk-device }} --architecture ${{ input.apk-architecture }} --dpi ${{ input.apk-dpi }} --sdk ${{ input.apk-sdk }}
+      run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }} --language ${{ inputs.apk-language }} --device ${{ inputs.apk-device }} --architecture ${{ inputs.apk-architecture }} --dpi ${{ inputs.apk-dpi }} --sdk ${{ inputs.apk-sdk }}
       shell: pwsh
 
     - name: Upload downloaded apk
