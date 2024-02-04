@@ -1,6 +1,6 @@
 name: 'apkcombo-downloader'
 
-author: "Ariel Tubul"
+author: 'Ariel Tubul'
 description: 'Download an apk from apkcombo'
 
 branding:
@@ -13,7 +13,7 @@ inputs:
     required: true
 
   output-apk:
-    description: 'Path to output apk file'
+    description: 'Path to output apk file (relative to `/github/workspace`)'
     required: true
 
   apk-language:
@@ -41,32 +41,28 @@ inputs:
     required: false
     default: 'default'
 
-  artifact-name:
-    description: 'Name of artifact to upload'
-    required: false
-    default: ''
-
 runs:
-  runs-on: 'ubuntu-latest'
-  container: 'selenium/standalone-edge:dev'
+  using: 'docker'
+  image: 'Dockerfile'
 
-  steps:
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+  args:
+    - --package
+    - ${{ inputs.package }}
 
-    - name: Prepare apkmod
-      run: pip install -r requirements.txt
-      shell: pwsh
+    - --path
+    - /github/workspace/${{ inputs.output-apk }}
 
-    - name: Download apk
-      run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }} --language ${{ inputs.apk-language }} --device ${{ inputs.apk-device }} --architecture ${{ inputs.apk-architecture }} --dpi ${{ inputs.apk-dpi }} --sdk ${{ inputs.apk-sdk }}
-      shell: pwsh
+    - --language
+    - ${{ inputs.apk-language }}
 
-    - name: Upload downloaded apk
-      if: inputs.artifact-name != ''
-      uses: actions/upload-artifact@v3.1.2
+    - --device
+    - ${{ inputs.apk-device }}
 
-      with:
-        name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.output-apk }}
+    - --architecture
+    - ${{ inputs.apk-architecture }}
+
+    - --dpi
+    - ${{ inputs.apk-dpi }}
+
+    - --sdk
+    - ${{ inputs.apk-sdk }}
