@@ -4,6 +4,7 @@ from pathlib import Path
 from selenium import webdriver
 from argparse import ArgumentParser
 from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.options import Options
 
 
 def parse_args():
@@ -37,7 +38,10 @@ def main():
     website_url = f'https://apkcombo.com/downloader/#package={arguments.package}&device={arguments.device}&sdk={arguments.sdk}&arches={arguments.architecture}&dpi={arguments.dpi}&lang={arguments.language}'
     print(f'About to download from web page {website_url}')
 
-    browser = webdriver.Firefox()
+    headless_mode_option = Options()
+    headless_mode_option.add_argument("headless")
+
+    browser = webdriver.Edge(options=headless_mode_option)
     browser.get(website_url)
 
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
