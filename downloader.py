@@ -37,7 +37,7 @@ def main():
     website_url = f'https://apkcombo.com/downloader/#package={arguments.package}&device={arguments.device}&sdk={arguments.sdk}&arches={arguments.architecture}&dpi={arguments.dpi}&lang={arguments.language}'
     print(f'About to download from web page {website_url}')
 
-    browser = webdriver.Chrome()
+    browser = webdriver.Firefox()
     browser.get(website_url)
 
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
