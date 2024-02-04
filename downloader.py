@@ -4,7 +4,6 @@ from pathlib import Path
 from selenium import webdriver
 from argparse import ArgumentParser
 from selenium.webdriver.common.by import By
-from selenium.webdriver.edge.options import Options
 
 
 def parse_args():
@@ -32,16 +31,27 @@ def download_file(url: str, output_path: Path):
                 output_file.write(chunk)
 
 
+def get_headless_chrome_options() -> webdriver.ChromeOptions:
+    chrome_options = webdriver.ChromeOptions()
+
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    chrome_prefs = {}
+    chrome_options.experimental_options["prefs"] = chrome_prefs
+    chrome_prefs["profile.default_content_settings"] = {"images": 2}
+
+    return chrome_options
+
+
 def main():
     arguments = parse_args()
 
     website_url = f'https://apkcombo.com/downloader/#package={arguments.package}&device={arguments.device}&sdk={arguments.sdk}&arches={arguments.architecture}&dpi={arguments.dpi}&lang={arguments.language}'
     print(f'About to download from web page {website_url}')
 
-    headless_mode_option = Options()
-    headless_mode_option.add_argument("headless")
-
-    browser = webdriver.Edge(options=headless_mode_option)
+    browser = webdriver.Chrome(options=get_headless_chrome_options())
     browser.get(website_url)
 
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
