@@ -16,6 +16,31 @@ inputs:
     description: 'Path to output apk file'
     required: true
 
+  apk-language:
+    description: 'Language of apk to download'
+    required: false
+    default: 'en'
+
+  apk-device:
+    description: 'Target device for the apk (phone / tablet / tv)'
+    required: false
+    default: 'default'
+
+  apk-architecture:
+    description: 'Target architecture for the apk (arm64-v8a / armeabi-v7a / x86 / x86_64)'
+    required: false
+    default: 'default'
+
+  apk-dpi:
+    description: 'Target apk dpi'
+    required: false
+    default: '480'
+
+  apk-sdk:
+    description: 'Target apk sdk'
+    required: false
+    default: 'default'
+
   artifact-name:
     description: 'Name of artifact to upload'
     required: false
@@ -35,7 +60,7 @@ runs:
       shell: pwsh
 
     - name: Download apk
-      run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }}
+      run: ./downloader.py --package ${{ inputs.package }} --path ${{ inputs.output-apk }} --language ${{ input.apk-language }} --device ${{ input.apk-device }} --architecture ${{ input.apk-architecture }} --dpi ${{ input.apk-dpi }} --sdk ${{ input.apk-sdk }}
       shell: pwsh
 
     - name: Upload downloaded apk
