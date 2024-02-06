@@ -1,9 +1,6 @@
 FROM ultrafunk/undetected-chromedriver
 USER root
 
-RUN apt update && apt upgrade -y
-RUN yes | apt install python3-pip
-
 COPY . /app
 WORKDIR /app
 
