@@ -30,7 +30,7 @@ def download_file(url: str, output_path: Path):
             for chunk in request_stream.iter_content(chunk_size=DEFAULT_CHUNK_SIZE):
                 output_file.write(chunk)
 
-# TODO: remove?
+
 def get_headless_chrome_options() -> webdriver.ChromeOptions:
     chrome_options = webdriver.ChromeOptions()
 
@@ -51,7 +51,7 @@ def main():
     website_url = f'https://apkcombo.com/downloader/#package={arguments.package}&device={arguments.device}&sdk={arguments.sdk}&arches={arguments.architecture}&dpi={arguments.dpi}&lang={arguments.language}'
     print(f'About to download from web page {website_url}')
 
-    browser = webdriver.Chrome() # TODO: remove? options=get_headless_chrome_options())
+    browser = webdriver.Chrome(options=get_headless_chrome_options())
     browser.start_session()
     
     browser.get(website_url)
