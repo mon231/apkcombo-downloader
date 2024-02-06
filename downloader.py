@@ -52,6 +52,8 @@ def main():
     print(f'About to download from web page {website_url}')
 
     browser = webdriver.Chrome() # TODO: remove? options=get_headless_chrome_options())
+    browser.start_session()
+    
     browser.get(website_url)
     page_loaded_timepoint = time.time()
     
