@@ -1,10 +1,10 @@
+import time
 import requests
 from time import sleep
 from pathlib import Path
-from selenium import webdriver
 from argparse import ArgumentParser
 from selenium.webdriver.common.by import By
-
+import undetected_chromedriver as webdriver
 
 def parse_args():
     arguments_parser = ArgumentParser('apk files downloader, using apkcombo website')
@@ -30,7 +30,7 @@ def download_file(url: str, output_path: Path):
             for chunk in request_stream.iter_content(chunk_size=DEFAULT_CHUNK_SIZE):
                 output_file.write(chunk)
 
-
+# TODO: remove?
 def get_headless_chrome_options() -> webdriver.ChromeOptions:
     chrome_options = webdriver.ChromeOptions()
 
@@ -51,13 +51,18 @@ def main():
     website_url = f'https://apkcombo.com/downloader/#package={arguments.package}&device={arguments.device}&sdk={arguments.sdk}&arches={arguments.architecture}&dpi={arguments.dpi}&lang={arguments.language}'
     print(f'About to download from web page {website_url}')
 
-    browser = webdriver.Chrome(options=get_headless_chrome_options())
+    browser = webdriver.Chrome() # TODO: remove? options=get_headless_chrome_options())
     browser.get(website_url)
-
+    page_loaded_timepoint = time.time()
+    
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
+        DOWNLOAD_URL_LOAD_TIMEOUT_SEC = 10
+        if time.time() - page_loaded_timepoint > DOWNLOAD_URL_LOAD_TIMEOUT_SEC:
+            raise RuntimeError('download-url load time reached timeout')
+
         DOWNLOAD_URL_EXISTENCE_CHECK_DELAY_SEC = 0.5
         sleep(DOWNLOAD_URL_EXISTENCE_CHECK_DELAY_SEC)
-
+        
     files_list = browser.find_element(By.CLASS_NAME, 'file-list')
     download_url = files_list.find_element(By.TAG_NAME, 'a').get_attribute('href')
 
