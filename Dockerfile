@@ -1,4 +1,4 @@
-FROM selenium/standalone-chrome:dev
+FROM ultrafunk/undetected-chromedriver
 USER root
 
 RUN apt update && apt upgrade -y
@@ -10,4 +10,4 @@ WORKDIR /app
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["sudo", "python3", "/app/downloader.py"]
+ENTRYPOINT ["python3", "/app/downloader.py"]
