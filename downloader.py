@@ -58,8 +58,9 @@ def main():
     page_loaded_timepoint = time.time()
     
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
-        DOWNLOAD_URL_LOAD_TIMEOUT_SEC = 10
+        DOWNLOAD_URL_LOAD_TIMEOUT_SEC = 15
         if time.time() - page_loaded_timepoint > DOWNLOAD_URL_LOAD_TIMEOUT_SEC:
+            print(browser.page_source)
             raise RuntimeError('download-url load time reached timeout')
 
         DOWNLOAD_URL_EXISTENCE_CHECK_DELAY_SEC = 0.5
