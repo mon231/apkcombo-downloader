@@ -1,0 +1,26 @@
+name: Download APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download APK
+      uses: ./ # Uses an action in the root directory
+      with:
+        package: 'com.PigeonGames.Rizline'
+        output-apk: 'Rizline.apk'
+        apk-language: 'en'
+        apk-device: 'default'
+        apk-architecture: 'default'
+        apk-dpi: '480'
+        apk-sdk: 'default'
