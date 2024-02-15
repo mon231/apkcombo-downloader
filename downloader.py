@@ -4,7 +4,9 @@ from time import sleep
 from pathlib import Path
 from argparse import ArgumentParser
 from selenium.webdriver.common.by import By
-import undetected_chromedriver as webdriver
+#import undetected_chromedriver as webdriver
+from selenium import webdriver
+from selenium_stealth import stealth
 
 def parse_args():
     arguments_parser = ArgumentParser('apk files downloader, using apkcombo website')
@@ -52,13 +54,21 @@ def main():
     print(f'About to download from web page {website_url}')
 
     browser = webdriver.Chrome(options=get_headless_chrome_options())
+    stealth(browser,
+        languages=["en-US", "en"],
+        vendor="Google Inc.",
+        platform="Win32",
+        webgl_vendor="Intel Inc.",
+        renderer="Intel Iris OpenGL Engine",
+        fix_hairline=True,
+        )
     browser.start_session()
     
     browser.get(website_url)
     page_loaded_timepoint = time.time()
     
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
-        DOWNLOAD_URL_LOAD_TIMEOUT_SEC = 15
+        DOWNLOAD_URL_LOAD_TIMEOUT_SEC = 10
         if time.time() - page_loaded_timepoint > DOWNLOAD_URL_LOAD_TIMEOUT_SEC:
             print(browser.page_source)
             raise RuntimeError('download-url load time reached timeout')
