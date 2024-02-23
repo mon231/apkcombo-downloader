@@ -1,10 +1,10 @@
 import time
 import requests
-from time import sleep
 from pathlib import Path
 from argparse import ArgumentParser
 from selenium.webdriver.common.by import By
-import undetected_chromedriver as webdriver
+from proxy_manager import ProxyManager
+
 
 def parse_args():
     arguments_parser = ArgumentParser('apk files downloader, using apkcombo website')
@@ -25,54 +25,61 @@ def download_file(url: str, output_path: Path):
         request_stream.raise_for_status()
 
         with open(output_path, 'wb') as output_file:
-            DEFAULT_CHUNK_SIZE = 8192
+            DOWNLOAD_CHUNK_SIZE = 8192
 
-            for chunk in request_stream.iter_content(chunk_size=DEFAULT_CHUNK_SIZE):
+            for chunk in request_stream.iter_content(chunk_size=DOWNLOAD_CHUNK_SIZE):
                 output_file.write(chunk)
 
 
-def get_headless_chrome_options() -> webdriver.ChromeOptions:
-    chrome_options = webdriver.ChromeOptions()
-
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    chrome_prefs = {}
-    chrome_options.experimental_options["prefs"] = chrome_prefs
-    chrome_prefs["profile.default_content_settings"] = {"images": 2}
-
-    return chrome_options
+def get_download_url(package: str, device: str, sdk: str, architecture: str, dpi: int, language: str):
+    return f'https://apkcombo.com/downloader/#package={package}&device={device}&sdk={sdk}&arches={architecture}&dpi={dpi}&lang={language}'
 
 
-def main():
-    arguments = parse_args()
+def download_using_proxy(proxy_manager: ProxyManager, target_path: Path, package: str, device: str, sdk: str, architecture: str, dpi: int, language: str):
+    browser = proxy_manager.get_proxied_undetected_browser()
+    website_url = get_download_url(package, device, sdk, architecture, dpi, language)
 
-    website_url = f'https://apkcombo.com/downloader/#package={arguments.package}&device={arguments.device}&sdk={arguments.sdk}&arches={arguments.architecture}&dpi={arguments.dpi}&lang={arguments.language}'
-    print(f'About to download from web page {website_url}')
-
-    browser = webdriver.Chrome(options=get_headless_chrome_options())
-    browser.start_session()
-    
     browser.get(website_url)
     page_loaded_timepoint = time.time()
-    
+
     while not browser.find_elements(By.CLASS_NAME, 'file-list'):
         DOWNLOAD_URL_LOAD_TIMEOUT_SEC = 10
+
         if time.time() - page_loaded_timepoint > DOWNLOAD_URL_LOAD_TIMEOUT_SEC:
             raise RuntimeError('download-url load time reached timeout')
 
         DOWNLOAD_URL_EXISTENCE_CHECK_DELAY_SEC = 0.5
-        sleep(DOWNLOAD_URL_EXISTENCE_CHECK_DELAY_SEC)
-        
+        time.sleep(DOWNLOAD_URL_EXISTENCE_CHECK_DELAY_SEC)
+
     files_list = browser.find_element(By.CLASS_NAME, 'file-list')
     download_url = files_list.find_element(By.TAG_NAME, 'a').get_attribute('href')
 
-    print(f'About to download {download_url} into {arguments.path}')
-    download_file(download_url, arguments.path)
+    print(f'About to download {download_url} into {target_path}')
+    download_file(download_url, target_path)
 
-    print(f'Successfully downloaded {arguments.package} package, at {arguments.path}')
+    print(f'Successfully downloaded {package} package, at {target_path}')
     browser.quit()
+
+
+def main():
+    arguments = parse_args()
+    proxy_manager = ProxyManager()
+
+    DOWNLOAD_ATTEMPTS_COUNT = 5
+    for _ in range(DOWNLOAD_ATTEMPTS_COUNT):
+        try:
+            download_using_proxy(
+                proxy_manager,
+                arguments.path,
+                arguments.package,
+                arguments.device,
+                arguments.sdk,
+                arguments.architecture,
+                arguments.dpi,
+                arguments.language
+            )
+        except RuntimeError as e:
+            print('download error:', e)
 
 
 if __name__ == '__main__':
